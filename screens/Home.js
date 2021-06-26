@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     View,
@@ -8,55 +8,65 @@ import {
     ScrollView,
     FlatList,
     ImageBackground,
+    LogBox,
 } from 'react-native';
+
+import { useNavigation } from '@react-navigation/core';
 
 import { SIZES, COLORS, FONTS, icons, dummyData, images } from "../constants"
 
-const Home = ({ navigation }) => {
+import { PriceAlert, TransactionHistory } from '../components';
 
-    const[trending, setTrending] = useState(dummyData.trendingCurrencies)
+const Home = () => {
+    const navigation = useNavigation();
+
+    const [trending, setTrending] = useState(dummyData.trendingCurrencies)
+    const [transactionHistory, setTransactionHistory] = useState(dummyData.transactionHistory)
+
+    useEffect(() => {
+        LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
+    },[])
 
     function renderHeader() {
 
-        const renderItem = ({item, index}) => {
-            return(
-                <TouchableOpacity style={{
-                    width: 180,
-                    paddingVertical: SIZES.padding,
-                    paddingHorizontal: SIZES.padding,
-                    marginLeft: index === 0 ? SIZES.padding : 0,
-                    marginRight: SIZES.radius,
-                    borderRadius: 10,
-                    backgroundColor: COLORS.white,
-                }}>
-                    {/* CUrrency */}
-                    
-                    <View style={{flexDirection:'row'}}>
-                        <View>
-                            <Image
-                                source={item.image}
-                                resizeMode='cover'
-                                style={{
-                                    marginTop: 5,
-                                    width: 25,
-                                    height: 25,
-                                }}
-                            />
-                        </View>
-                        <View style={{marginLeft: SIZES.base}}>
-                            <Text style={{...FONTS.h2}}>{item.currency}</Text>
-                            <Text style={{color: COLORS.gray, ...FONTS.body3}}>{item.code}</Text>
-                        </View>
-                    </View>
+        const renderItem = ({ item, index }) => (
+            <TouchableOpacity style={{
+                width: 180,
+                paddingVertical: SIZES.padding,
+                paddingHorizontal: SIZES.padding,
+                marginLeft: index === 0 ? SIZES.padding : 0,
+                marginRight: SIZES.radius,
+                borderRadius: 10,
+                backgroundColor: COLORS.white,
+            }}
+            onPress={() => navigation.navigate('CryptoDetails', {currency: item})}>
+                {/* CUrrency */}
 
-                    {/* Value  */}
-                    <View style={{marginTop: SIZES.radius}}>
-                        <Text style={{...FONTS.h2}}>${item.amount}</Text>
-                        <Text style={{color:item.type == 'I' ? COLORS.green : COLORS.red, ...FONTS.h3 }}>{item.changes}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                    <View>
+                        <Image
+                            source={item.image}
+                            resizeMode='cover'
+                            style={{
+                                marginTop: 5,
+                                width: 25,
+                                height: 25,
+                            }}
+                        />
                     </View>
-                </TouchableOpacity>
-            );
-        }
+                    <View style={{ marginLeft: SIZES.base }}>
+                        <Text style={{ ...FONTS.h2 }}>{item.currency}</Text>
+                        <Text style={{ color: COLORS.gray, ...FONTS.body3 }}>{item.code}</Text>
+                    </View>
+                </View>
+
+                {/* Value  */}
+                <View style={{ marginTop: SIZES.radius }}>
+                    <Text style={{ ...FONTS.h2 }}>${item.amount}</Text>
+                    <Text style={{ color: item.type == 'I' ? COLORS.green : COLORS.red, ...FONTS.h3 }}>{item.changes}</Text>
+                </View>
+            </TouchableOpacity>
+        )
 
         return (
             <View style={{ width: '100%', height: 290, ...styles.shadow }}>
@@ -128,10 +138,62 @@ const Home = ({ navigation }) => {
         )
     }
 
+    function renderAlert() {
+        return (
+            <PriceAlert />
+        );
+    }
+
+    function renderNotice() {
+        return (
+            <View style={{
+                marginTop: SIZES.padding,
+                marginHorizontal: SIZES.padding,
+                padding: 20,
+                borderRadius: SIZES.radius,
+                backgroundColor: COLORS.secondary,
+                ...styles.shadow
+            }}>
+                <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Investing Safety</Text>
+                <Text style={{
+                    marginTop: SIZES.base, color: COLORS.white,
+                    ...FONTS.body4, lineHeight: 18
+                }}>
+                    It's very difficult to time an investments,{`\n`}
+                    especially when the market is valatile. Learn how to {`\n`}
+                    use dollar cost averaging to your advantage.
+                </Text>
+
+                <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={{
+                        marginTop: SIZES.base
+                    }}
+                    onPress={() => console.log("Learn more.")}>
+                    <Text style={{
+                        textDecorationLine: 'underline',
+                        color: COLORS.green, ...FONTS.h3
+                    }}>Learn more.</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    function renderTransactionHistory() {
+        return (
+            <TransactionHistory
+                customContainerStyle={{ ...styles.shadow }}
+                history={transactionHistory}
+            />
+        );
+    }
     return (
         <ScrollView>
             <View style={{ flex: 1, paddingBottom: 130 }}>
                 {renderHeader()}
+                {renderAlert()}
+                {renderNotice()}
+                {renderTransactionHistory()}
             </View>
         </ScrollView>
     )
