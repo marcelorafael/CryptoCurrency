@@ -1,0 +1,24 @@
+import React from 'react'
+import { View, Text, Image,  } from 'react-native'
+
+import { SIZES, COLORS, FONTS } from "../constants"
+
+export const CurrencyLabel = ({icon, currency, code}) => {
+  return (
+    <View style={{flexDirection:'row'}}>
+      <Image
+        source={icon}
+        resizeMode='cover'
+        style={{
+          width: 20,
+          height: 20,
+          marginTop: 5,
+        }}
+      />
+      <View style={{marginLeft: SIZES.base}}>
+        <Text style={{...FONTS.h3}}>{currency}</Text>
+        <Text style={{color: COLORS.gray, ...FONTS.body4}}>{code}</Text>
+      </View>
+    </View>
+  )
+}
