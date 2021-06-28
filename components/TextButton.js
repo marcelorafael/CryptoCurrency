@@ -17,7 +17,7 @@ export const TextButton = ({ label, customContainerStyle, customLabelStyle, onPr
       }}
       onPress={onPress}
     >
-      <Text style={{color: COLORS.white, ...FONTS.h3, ...customLabelStyle}}>{label}</Text>
+      <Text style={{color: COLORS.white, ...FONTS.body6, ...customLabelStyle}}>{label}</Text>
     </TouchableOpacity>
   )
 }
