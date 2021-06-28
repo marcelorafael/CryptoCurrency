@@ -18,7 +18,7 @@ import { useNavigation } from '@react-navigation/core';
 
 import { SIZES, COLORS, FONTS, icons, dummyData, images } from "../constants"
 
-import { CurrencyLabel, HeaderBar, TextButton } from '../components';
+import { CurrencyLabel, HeaderBar, TextButton, PriceAlert } from '../components';
 
 const CryptoDetail = ({ route }) => {
     const scrollX = new Animated.Value(0);
@@ -307,6 +307,22 @@ const CryptoDetail = ({ route }) => {
         )
     }
 
+    function renderAbout() {
+        return (
+            <View style={{
+                marginTop: SIZES.padding,
+                marginHorizontal: SIZES.radius,
+                padding: SIZES.radius,
+                borderRadius: SIZES.radius,
+                backgroundColor: COLORS.white,
+                ...styles.shadow
+            }}>
+                <Text style={{ ...FONTS.h3 }}>About {selectedCurrency?.currency}</Text>
+                <Text style={{ marginTop: SIZES.base, ...FONTS.body3 }}>{selectedCurrency?.description}</Text>
+            </View>
+        );
+    }
+
     return (
         <SafeAreaView
             style={{
@@ -319,6 +335,13 @@ const CryptoDetail = ({ route }) => {
                 <View style={{ flex: 1, paddingBottom: SIZES.padding }}>
                     {renderChart()}
                     {renderBuy()}
+                    {renderAbout()}
+                    <PriceAlert
+                        customContainerStyle={{
+                            marginTop: SIZES.padding,
+                            marginHorizontal: SIZES.radius,
+                        }}
+                    />
                 </View>
             </ScrollView>
         </SafeAreaView>
