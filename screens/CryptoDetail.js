@@ -18,9 +18,14 @@ import { useNavigation } from '@react-navigation/core';
 
 import { SIZES, COLORS, FONTS, icons, dummyData, images } from "../constants"
 
-import { CurrencyLabel, HeaderBar } from '../components';
+import { CurrencyLabel, HeaderBar, TextButton } from '../components';
 
 const CryptoDetail = ({ route }) => {
+    const scrollX = new Animated.Value(0);
+    const numberOfCharts = [1, 2, 3]
+    const[chartOptions, setChartOptions] = useState(dummyData.chartOptions)
+    const [selectedOptions, setSelectedOptions] = useState(chartOptions)
+
     const navigation = useNavigation();
 
     const [selectedCurrency, setSelectedCurrency] = useState(null)
@@ -64,35 +69,114 @@ const CryptoDetail = ({ route }) => {
                 </View>
 
                 {/* Chart */}
-                <View 
-                    style={{
-                        marginTop: -25
-                    }}
+                <Animated.ScrollView
+                    horizontal
+                    pagingEnabled
+                    scrollEventThrottle={16}
+                    snapToAlignment="center"
+                    snapToInterval={SIZES.width - 40}
+                    showsHorizontalScrollIndicator={false}
+                    decelerationRate={0}
+                    onScroll={Animated.event([
+                        {nativeEvent: {contentOffset: {x: scrollX}}}
+                    ], {useNativeDriver: false})}
                 >
-                    <VictoryChart
-                        theme={VictoryCustomTheme}
-                        height={220}
-                        width={SIZES.width - 40}
-                    >
-                        <VictoryLine
+                {
+                    numberOfCharts.map((item, index) => (
+                        <View
+                            key={`chart-${index}`}
                             style={{
-                                data: {
-                                    stroke: COLORS.secondary
-                                },
-                                parent: {
-                                    border: "1px solid #CCC"
-                                }
+                                marginLeft: index === 0 ? SIZES.base : 0
                             }}
+                        >
+                        <View 
+                            style={{
+                                marginTop: -25
+                            }}
+                        >
+                            <VictoryChart
+                                theme={VictoryCustomTheme}
+                                height={220}
+                                width={SIZES.width - 40}
+                            >
+                                <VictoryLine
+                                    style={{
+                                        data: {
+                                            stroke: COLORS.secondary
+                                        },
+                                        parent: {
+                                            border: "1px solid #CCC"
+                                        }
+                                    }}
 
-                            data={selectedCurrency?.chartData}
-                            categories={{
-                                x: ["15 MIN", "30 MIN", "45 MIN", "60 MIN"],
-                                y: ["15 MIN", "30 MIN", "45 MIN"]
-                            }}
-                        />
-                    </VictoryChart>
-                </View>
+                                    data={selectedCurrency?.chartData}
+                                    categories={{
+                                        x: ["15 MIN", "30 MIN", "45 MIN", "60 MIN"],
+                                        y: ["15 MIN", "30 MIN", "45 MIN"]
+                                    }}
+                                />
+                                <VictoryScatter
+                                    data={selectedCurrency?.chartData}
+                                    size={7}
+                                    style={{
+                                        data: {
+                                            fill: COLORS.secondary,
+                                        }
+                                    }}
+                                />
+
+                                <VictoryAxis
+                                    style={{
+                                        grid: {
+                                            stroke: "transparent",
+                                        }
+                                    }}
+                                />
+
+                                <VictoryAxis
+                                    dependentAxis
+                                    style={{
+                                        axis: {
+                                            stroke: "transparent",
+                                        },
+                                        grid: {
+                                            stroke: "grey",
+                                        }
+                                    }}
+                                />
+                            </VictoryChart>
+                        </View>
+                        </View>
+                    ))
+                }
+                
+                </Animated.ScrollView>
                 {/* options */}
+                <View style={{
+                    width:'100%', 
+                    paddingHorizontal:SIZES.padding,
+                    flexDirection:'row',
+                    justifyContent:'space-between'
+                    }}>
+                        {
+                            chartOptions.map((option) => {
+                                return(
+                                    <TextButton
+                                        key={`option-${option.id}`}
+                                        label={option.label}
+                                        customContainerStyle={{
+                                            height: 30,
+                                            width: 60,
+                                            borderRadius: 15,
+                                            backgroundColor: 
+                                            selectedOptions.id === option.id
+                                            ? COLORS.primary : COLORS.lightGray
+                                        }}
+                                    />
+                                );
+                            })
+                        }
+                    </View>
                 {/* Dots */}
             </View>
         );
