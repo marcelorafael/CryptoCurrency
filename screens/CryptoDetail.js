@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     View,
@@ -10,6 +10,9 @@ import {
     Animated
 } from 'react-native';
 
+import { VictoryScatter, VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
+
+import { VictoryCustomTheme } from '../styles'
 
 import { useNavigation } from '@react-navigation/core';
 
@@ -17,15 +20,15 @@ import { SIZES, COLORS, FONTS, icons, dummyData, images } from "../constants"
 
 import { CurrencyLabel, HeaderBar } from '../components';
 
-const CryptoDetail = ({route}) => {
+const CryptoDetail = ({ route }) => {
     const navigation = useNavigation();
 
     const [selectedCurrency, setSelectedCurrency] = useState(null)
 
     useEffect(() => {
-        const {currency} = route.params;
-        setSelectedCurrency()
-    },[]);
+        const { currency } = route.params;
+        setSelectedCurrency(currency)
+    }, []);
 
     function renderChart() {
         return (
@@ -46,21 +49,49 @@ const CryptoDetail = ({route}) => {
                     paddingHorizontal: SIZES.padding
                 }}>
                     <View style={{ flex: 1 }}>
-                        <CurrencyLabel 
-                            icon={selectedCurrency?.image} 
+                        <CurrencyLabel
+                            icon={selectedCurrency?.image}
                             currency={selectedCurrency?.currency}
                             code={selectedCurrency?.code}
                         />
                     </View>
                     <View>
-                        <Text style={{...FONTS.h3}}>${selectedCurrency?.amount}</Text>
-                        <Text style={{color: selectedCurrency?.type === "I" ? COLORS.green : COLORS.black, ...FONTS.h3}}>
+                        <Text style={{ ...FONTS.h3 }}>${selectedCurrency?.amount}</Text>
+                        <Text style={{ color: selectedCurrency?.type === "I" ? COLORS.green : COLORS.black, ...FONTS.h3 }}>
                             {selectedCurrency?.changes}
                         </Text>
                     </View>
                 </View>
 
                 {/* Chart */}
+                <View 
+                    style={{
+                        marginTop: -25
+                    }}
+                >
+                    <VictoryChart
+                        theme={VictoryCustomTheme}
+                        height={220}
+                        width={SIZES.width - 40}
+                    >
+                        <VictoryLine
+                            style={{
+                                data: {
+                                    stroke: COLORS.secondary
+                                },
+                                parent: {
+                                    border: "1px solid #CCC"
+                                }
+                            }}
+
+                            data={selectedCurrency?.chartData}
+                            categories={{
+                                x: ["15 MIN", "30 MIN", "45 MIN", "60 MIN"],
+                                y: ["15 MIN", "30 MIN", "45 MIN"]
+                            }}
+                        />
+                    </VictoryChart>
+                </View>
                 {/* options */}
                 {/* Dots */}
             </View>
